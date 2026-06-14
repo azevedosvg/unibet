@@ -1,0 +1,56 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Administrador",
+      "email": "admin@unibet.com",
+      "password": "123",
+      "role": "admin",
+      "balance": 0
+    },
+    {
+      "id": 2,
+      "name": "João Silva",
+      "email": "joao@unibet.com",
+      "password": "123",
+      "role": "user",
+      "balance": 1000
+    },
+    {
+      "id": 3,
+      "name": "Maria Souza",
+      "email": "maria@unibet.com",
+      "password": "123",
+      "role": "user",
+      "balance": 1000
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "teamA": "Brasil",
+      "teamB": "Argentina",
+      "sport": "Futebol",
+      "date": "2026-06-20",
+      "status": "open",
+      "result": "",
+      "poolA": 0,
+      "poolB": 0,
+      "poolDraw": 0
+    },
+    {
+      "id": 2,
+      "teamA": "Lakers",
+      "teamB": "Celtics",
+      "sport": "Basquete",
+      "date": "2026-06-22",
+      "status": "open",
+      "result": "",
+      "poolA": 0,
+      "poolB": 0,
+      "poolDraw": 0
+    }
+  ],
+  "bets": [],
+  "transactions": []
+}
