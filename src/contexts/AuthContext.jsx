@@ -31,9 +31,9 @@ export function AuthProvider({ children }) {
 
   // 3: Disponibiliza o estado (user) e as ações (signIn, signOut) para todos os componentes filhos através do 'value'
   return (
-    <AuthContext.provider value={{ user, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, signIn, signOut }}>
       {children}
-    </AuthContext.provider>
+    </AuthContext.Provider>
   );
 }
 

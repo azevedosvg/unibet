@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { Login } from "../pages/Login";
-import { AdminDashboard } from "../pages/AdminDashboard";
-import { UserDashboard } from "../pages/UserDashboard";
+import Login from "../pages/Login";
+import AdminDashboard from "../pages/AdminDashboard";
+import UserDashboard from "../pages/UserDashboard";
 
 function AppRoutes() {
   return (
@@ -15,7 +15,7 @@ function AppRoutes() {
 
       {/* Painéis */}
       <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/user" element={<UserDashboard />} />
+      <Route path="/dashboard" element={<UserDashboard />} />
 
       {/* Rota coringa: Qualquer URL inexistente cai no login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
