@@ -24,7 +24,9 @@ function AdminDashboard() {
   const [date, setDate] = useState("");
 
   // Mensagem de feedback para o admin (sucesso ou erro do cadastro).
+  // type vai diferenciar mensagem de sucesso e de erro (melhora na estilização)
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // "success" ou "error"
 
   // Função que busca os eventos na API e atualiza o estado.
   // Deixo separada para poder chamá-la tanto ao abrir a tela, quanto depois de cadastrar um evento novo (para a lista atualizar).
@@ -45,22 +47,45 @@ function AdminDashboard() {
     event.preventDefault(); // impede o recarregamento padrão do formulário
     setMessage("");
 
+    // Validações antes de enviar para a API
+    // 1) Os dois lados não podem ser o mesmo time
+    // .trim() para remover espaços nas pontas; .toLowerCase() para ignorar maiúsculas/minúsculas
+    // Logo, "Brasil" e "brasil" são tratados como iguais
+    if (teamA.trim().toLowerCase() === teamB.trim().toLowerCase()) {
+      setMessageType("error");
+      setMessage("Os dois lados não podem ser o mesmo time.");
+      return; // interrompe -- não envia para a API
+    }
+
+    // 2) A data não pode estar no passado
+    // Comparo a data escolhida com a data de hoje
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // zera o horário para comparar só o dia
+    const selectedDate = new Date(date + "T00:00:00"); // interpreta como data local
+
+    if (selectedDate < today) {
+      setMessageType("error");
+      setMessage("A data do evento não pode estar no passado.");
+      return;
+    }
+
+    // Passou nas validações, entra para a API
     try {
-      // Monta o objeto com os dados do formulário e envia ao service.
-      // O service completa com status "open", pools zerados, etc.
       await createEvent({ teamA, teamB, sport, date });
 
+      setMessageType("success");
       setMessage("Evento cadastrado com sucesso!");
 
-      // Limpa os campos do formulário após o cadastro.
+      // Limpa os campos do formulário após cadastro
       setTeamA("");
       setTeamB("");
       setSport("");
       setDate("");
 
-      // Recarrega a lista para o evento novo aparecer.
+      // Recarrega a lista para o evento novo aparecer
       loadEvents();
     } catch (err) {
+      setMessageType("error");
       setMessage("Erro ao cadastrar evento. Tente novamente.");
     }
   }
@@ -150,7 +175,11 @@ function AdminDashboard() {
         </form>
 
         {/* Mensagem de feedback (só aparece se houver texto) */}
-        {message && <p>{message}</p>}
+        {message && (
+          <p className={messageType === "error" ? "msg-error" : "msg-success"}>
+            {message}
+          </p>
+        )}
       </section>
 
       {/* Lista dos eventos já cadastrados */}
