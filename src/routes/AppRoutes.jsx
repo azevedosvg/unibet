@@ -2,20 +2,36 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import AdminDashboard from "../pages/AdminDashboard";
 import UserDashboard from "../pages/UserDashboard";
+import ProtectedRoute from "./ProtectedRoute";
 
 function AppRoutes() {
   return (
     <Routes>
       {/* Rota raiz, redireciona para o login. */}
-      {/* `replace` troca a entrada no histórico em vez de empilhar, então o botão "voltar" do navegador não volta para "/" vazio. */}
       <Route path="/" element={<Navigate to="/login" replace />} />
 
       {/* Tela de login, acessível por /login */}
       <Route path="/login" element={<Login />} />
 
-      {/* Painéis */}
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/dashboard" element={<UserDashboard />} />
+      {/* Painel do admin: protegido, só perfil "admin" entra. */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRole="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Painel do jogador: protegido, só perfil "user" entra. */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute allowedRole="user">
+            <UserDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Rota coringa: Qualquer URL inexistente cai no login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
