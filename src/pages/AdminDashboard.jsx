@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { getEvents, createEvent } from "../services/eventService";
+import {
+  getEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+} from "../services/eventService";
 
 function AdminDashboard() {
   // signOut vem do contexto: usado no botão de sair.
@@ -58,6 +63,31 @@ function AdminDashboard() {
     } catch (err) {
       setMessage("Erro ao cadastrar evento. Tente novamente.");
     }
+  }
+
+  // Encerra as apostas de um evento: muda o status de "open" para "closed".
+  // PATCH envia só o campo status: o resto do evento continua intacto
+  async function handleCloseBets(id) {
+    await updateEvent(id, { status: "closed" });
+    loadEvents(); // recarrega a lista para refletir o novo status
+  }
+
+  // Reabre as apostas de um evento (volta de 'closed' para 'open')
+  // Útil se o admin encerrour por engano.
+  async function handleReopenBets(id) {
+    await updateEvent(id, { status: "open" });
+    loadEvents();
+  }
+
+  // Exclui um evento. Pede confirmação antes, porque é uma ação irreversível.
+  async function handleDelete(id) {
+    const confirmed = window.confirm(
+      "Tem certeza que deseja excluir este evento? Esta ação é irreversível.",
+    );
+    if (!confirmed) return; // Se o admin cancelar, não faz nada
+
+    await deleteEvent(id);
+    loadEvents();
   }
 
   return (
@@ -138,10 +168,10 @@ function AdminDashboard() {
                 <th>Esporte</th>
                 <th>Data</th>
                 <th>Status</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {/* Percorre o array de eventos e gera uma linha para cada um. */}
               {events.map((ev) => (
                 <tr key={ev.id}>
                   <td>
@@ -150,6 +180,29 @@ function AdminDashboard() {
                   <td>{ev.sport}</td>
                   <td>{ev.date}</td>
                   <td>{ev.status}</td>
+                  <td>
+                    {/* Os botões mudam conforme o status atual do evento. */}
+
+                    {/* Evento aberto: pode encerrar as apostas. */}
+                    {ev.status === "open" && (
+                      <button onClick={() => handleCloseBets(ev.id)}>
+                        Encerrar apostas
+                      </button>
+                    )}
+
+                    {/* Evento encerrado: pode reabrir (mas não se já foi liquidado). */}
+                    {ev.status === "closed" && (
+                      <button onClick={() => handleReopenBets(ev.id)}>
+                        Reabrir apostas
+                      </button>
+                    )}
+
+                    {/* Evento liquidado: não há mais ações de aposta, só informa. */}
+                    {ev.status === "settled" && <span>Finalizado</span>}
+
+                    {/* Excluir está sempre disponível. */}
+                    <button onClick={() => handleDelete(ev.id)}>Excluir</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
