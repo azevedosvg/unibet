@@ -22,3 +22,17 @@ export async function createTransaction(transactionData) {
   const response = await api.post("/transactions", transactionData);
   return response.data;
 }
+
+// Busca todas as apostas de um evento específico (usado na liquidação)
+export async function getBetsByEvent(eventId) {
+  const responde = await api.get("/bets", {
+    params: { eventId },
+  });
+  return responde.data;
+}
+
+// Atualiza uma aposta (status e retorno) após a liquidação
+export async function updateBet(id, changes) {
+  const response = await api.patch(`/bets/${id}`, changes);
+  return response.data;
+}
