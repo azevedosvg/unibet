@@ -2,7 +2,7 @@
 // Verifica se há usuário logado e se o perfil dele tem permissão pra acessar a rota
 
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 // Props:
 // children: o conteúdo (a página) que será protegida
