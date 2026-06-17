@@ -26,3 +26,9 @@ export async function updateUser(id, changes) {
   const response = await api.patch(`/users/${id}`, changes);
   return response.data;
 }
+
+// Busca todos os usuários (usado no ranking).
+export async function getAllUsers() {
+  const response = await api.get("/users");
+  return response.data;
+}

@@ -2,8 +2,10 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import AdminDashboard from "../pages/AdminDashboard";
 import UserDashboard from "../pages/UserDashboard";
-import ProtectedRoute from "./ProtectedRoute";
 import BetScreen from "../pages/BetScreen";
+import History from "../pages/History";
+import Ranking from "../pages/Ranking";
+import ProtectedRoute from "./ProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -11,10 +13,10 @@ function AppRoutes() {
       {/* Rota raiz, redireciona para o login. */}
       <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* Tela de login, acessível por /login */}
+      {/* Tela de login (rota pública). */}
       <Route path="/login" element={<Login />} />
 
-      {/* Painel do admin: protegido, só perfil "admin" entra. */}
+      {/* Painel do admin: só perfil "admin". */}
       <Route
         path="/admin"
         element={
@@ -24,7 +26,7 @@ function AppRoutes() {
         }
       />
 
-      {/* Painel do jogador: protegido, só perfil "user" entra. */}
+      {/* Painel do jogador: só perfil "user". */}
       <Route
         path="/dashboard"
         element={
@@ -35,7 +37,6 @@ function AppRoutes() {
       />
 
       {/* Tela de aposta de um evento específico. */}
-      {/* O ":id" é um parâmetro: vira /bet/1, /bet/2, etc. */}
       <Route
         path="/bet/:id"
         element={
@@ -45,7 +46,27 @@ function AppRoutes() {
         }
       />
 
-      {/* Rota coringa: Qualquer URL inexistente cai no login */}
+      {/* Histórico de apostas do jogador. */}
+      <Route
+        path="/history"
+        element={
+          <ProtectedRoute allowedRole="user">
+            <History />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Ranking de jogadores. */}
+      <Route
+        path="/ranking"
+        element={
+          <ProtectedRoute allowedRole="user">
+            <Ranking />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Rota coringa: qualquer URL inexistente cai no login. */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

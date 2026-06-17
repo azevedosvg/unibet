@@ -1,6 +1,7 @@
 // Usa a context API para que qualquer componente acesse o usuário logado, sem precisar receber essa informação via props
 import { createContext, useContext, useState } from "react";
 import { login as loginRequest } from "../services/userService";
+import { grantDailyBonusIfEligible } from "../services/bonusService";
 
 // 1: Criando o contexto (canal por onde os dados vão trafegar)
 const AuthContext = createContext();
@@ -18,6 +19,14 @@ export function AuthProvider({ children }) {
     if (!foundUser) {
       throw new Error("E-Mail ou senha inválidos");
     }
+
+    // Concede o bônus diário se for o primeiro login do dia.
+    // A função devolve o usuário com saldo atualizado (ou o mesmo, se já recebeu).
+    const userWithBonus = await grantDailyBonusIfEligible(foundUser);
+
+    // Guarda o usuário (já com o bônus, se houve) no estado global.
+    setUser(userWithBonus);
+    return userWithBonus;
 
     // Login válido: guarda o usuário no estado global
     setUser(foundUser);

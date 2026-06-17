@@ -14,7 +14,8 @@
       "email": "joao@unibet.com",
       "password": "123",
       "role": "user",
-      "balance": 1000
+      "balance": 1000,
+      "lastBonus": ""
     },
     {
       "id": 3,
@@ -22,7 +23,8 @@
       "email": "maria@unibet.com",
       "password": "123",
       "role": "user",
-      "balance": 1000
+      "balance": 1000,
+      "lastBonus": ""
     }
   ],
   "events": [
