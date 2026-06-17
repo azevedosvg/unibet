@@ -3,6 +3,7 @@ import Login from "../pages/Login";
 import AdminDashboard from "../pages/AdminDashboard";
 import UserDashboard from "../pages/UserDashboard";
 import ProtectedRoute from "./ProtectedRoute";
+import BetScreen from "../pages/BetScreen";
 
 function AppRoutes() {
   return (
@@ -29,6 +30,17 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRole="user">
             <UserDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Tela de aposta de um evento específico. */}
+      {/* O ":id" é um parâmetro: vira /bet/1, /bet/2, etc. */}
+      <Route
+        path="/bet/:id"
+        element={
+          <ProtectedRoute allowedRole="user">
+            <BetScreen />
           </ProtectedRoute>
         }
       />

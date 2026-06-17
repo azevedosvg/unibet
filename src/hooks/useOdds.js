@@ -1,43 +1,50 @@
-// hook customizado que calcula as odds de um evt a partir das pools de apostas (sistema pari-mutuel)
+// Hook customizado que calcula as odds de um evento a partir dos pools de apostas (sistema pari-mutuel).
 
-// conceito central da unibet: a odd não é fixada por ninguém.
-// ela nasce do volume apostado em cada lado. quanto mais gente aposta num lado, menor a odd dele; quanto menos gente, maior.
+// Conceito central do Uni Bet: a odd NÃO é fixada por ninguém.
+// Ela nasce do volume apostado em cada lado. Quanto mais gente aposta num lado, menor a odd dele (paga menos); quanto menos gente, maior.
 
-// taxa da casa: 5% do total fica retido (fica de fora do pagamento)
-// isso torna o sistema realista -- as casas de aposta sempre retém uma fatia
+// Taxa da casa: 5% do total fica retido (fica de fora do pagamento).
+// É o que torna o sistema realista — casas de aposta sempre retêm uma fatia.
+const HOUSE_EDGE = 0.95; // 0.95 = devolve 95%, retém 5%
 
-const HOUSE_EDGE = 0.95; // 0.95 = devolve 95%, retem 5%
-
-// odd padrao usada quando um lado ainda nao recebeu nenhuma aposta
-// evita divisao por 0 e da um numero de partida na tela
+// Odd padrão usada quando um lado ainda não recebeu nenhuma aposta.
+// Evita divisão por zero e dá um número de partida na tela.
 const DEFAULT_ODD = 2.0;
 
-// recebe um evt e devolve um obj com as odds de cada lado
-// nao e um hook que usa useState ou useEffect, e um hook de calculo
-// uma funcao reutilizavel de logica que centraliza a regra das odds num lugar so
-export default function useOdds(event) {
-    // protecao: se o evt ainda nao chegou (null), devolve odds padrao
-    if (!event) {
-        return { oddA: DEFAULT_ODD, oddB: DEFAULT_ODD, oddDraw: DEFAULT_ODD };
+// Recebe um evento e devolve um objeto com as odds de cada lado.
+// Não é um hook que usa useState/useEffect — é um "hook de cálculo":
+// uma função reutilizável de lógica, que centraliza a regra das odds num lugar só.
+export function useOdds(event) {
+  // Proteção: se o evento ainda não chegou (null), devolve odds padrão.
+  if (!event) {
+    return { oddA: DEFAULT_ODD, oddB: DEFAULT_ODD, oddDraw: DEFAULT_ODD };
+  }
+
+  // Lê os pools do evento. O "|| 0" garante 0 caso o campo venha indefinido.
+  const poolA = event.poolA || 0;
+  const poolB = event.poolB || 0;
+  const poolDraw = event.poolDraw || 0;
+
+  // Pool total = soma de tudo que foi apostado no evento.
+  const totalPool = poolA + poolB + poolDraw;
+
+  // Função interna que calcula a odd de UM lado.
+  // Recebe o pool daquele lado e aplica a fórmula pari-mutuel.
+  function calculateOdd(sidePool) {
+    // Se ninguém apostou no evento todo, ou nesse lado, usa a odd padrão.
+    if (totalPool === 0 || sidePool === 0) {
+      return DEFAULT_ODD;
     }
+    // Fórmula: (pool total com a taxa da casa descontada) / pool do lado.
+    const odd = (totalPool * HOUSE_EDGE) / sidePool;
+    // Arredonda para 2 casas decimais (ex: 1.8 em vez de 1.79999).
+    return Math.round(odd * 100) / 100;
+  }
 
-    // le os pools do evt. o "|| 0" garante 0 caso o campo venha indefinido
-    const poolA = event.poolA || 0;
-    const poolB = event.poolB || 0;
-    const poolDraw = event.poolDraw || 0;
-
-    // pool total = soma de tudo que foi apostado no evt
-    const totalPool = poolA + poolB + poolDraw;
-
-    // funcao interna que calcula a odd de um lado
-    // recebe o pool daquele lado e aplica a formula pari-mutuel
-    function calculateOdd(sidepool) {
-        // se ngm apostou no evt todo, ou nesse lado, usa a odd padrao
-        if (totalPool === 0 || sidePool === 0) {
-            return DEFAULT_ODD;
-        }
-        
-        // for
-    }
+  // Calcula e devolve as três odds de uma vez.
+  return {
+    oddA: calculateOdd(poolA),
+    oddB: calculateOdd(poolB),
+    oddDraw: calculateOdd(poolDraw),
+  };
 }
-
