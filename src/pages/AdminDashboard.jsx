@@ -8,6 +8,7 @@ import {
   updateEvent,
   deleteEvent,
 } from "../services/eventService";
+import { settleEvent } from "../services/settlementService";
 
 function AdminDashboard() {
   // signOut vem do contexto: usado no botão de sair.
@@ -88,6 +89,22 @@ function AdminDashboard() {
       setMessageType("error");
       setMessage("Erro ao cadastrar evento. Tente novamente.");
     }
+  }
+
+  // Liquida um evento: lança o resultado e paga os vencedores.
+  // winningSide é "A", "B" ou "Draw" (quem venceu).
+  async function handleSettle(id, winningSide) {
+    // Liquidar é irreversível (mexe em saldos), então pede confirmação.
+    const confirmed = window.confirm(
+      "Confirmar o resultado? Isso vai pagar os vencedores e não pode ser desfeito.",
+    );
+    if (!confirmed) return;
+
+    // Chama o service que faz todo o trabalho pesado.
+    await settleEvent(id, winningSide);
+
+    // Recarrega a lista para o status do evento aparecer como "settled".
+    loadEvents();
   }
 
   // Encerra as apostas de um evento: muda o status de "open" para "closed".
@@ -210,8 +227,6 @@ function AdminDashboard() {
                   <td>{ev.date}</td>
                   <td>{ev.status}</td>
                   <td>
-                    {/* Os botões mudam conforme o status atual do evento. */}
-
                     {/* Evento aberto: pode encerrar as apostas. */}
                     {ev.status === "open" && (
                       <button onClick={() => handleCloseBets(ev.id)}>
@@ -219,17 +234,36 @@ function AdminDashboard() {
                       </button>
                     )}
 
-                    {/* Evento encerrado: pode reabrir (mas não se já foi liquidado). */}
+                    {/* Evento encerrado: hora de lançar o resultado. */}
+                    {/* Cada botão informa qual lado venceu e dispara a liquidação. */}
                     {ev.status === "closed" && (
-                      <button onClick={() => handleReopenBets(ev.id)}>
-                        Reabrir apostas
-                      </button>
+                      <div className="settle-actions">
+                        <span>Vencedor: </span>
+                        <button onClick={() => handleSettle(ev.id, "A")}>
+                          {ev.teamA}
+                        </button>
+                        <button onClick={() => handleSettle(ev.id, "Draw")}>
+                          Empate
+                        </button>
+                        <button onClick={() => handleSettle(ev.id, "B")}>
+                          {ev.teamB}
+                        </button>
+                      </div>
                     )}
 
-                    {/* Evento liquidado: não há mais ações de aposta, só informa. */}
-                    {ev.status === "settled" && <span>Finalizado</span>}
+                    {/* Evento liquidado: mostra o resultado final. */}
+                    {ev.status === "settled" && (
+                      <span>
+                        Finalizado · Resultado:{" "}
+                        {ev.result === "A"
+                          ? ev.teamA
+                          : ev.result === "B"
+                            ? ev.teamB
+                            : "Empate"}
+                      </span>
+                    )}
 
-                    {/* Excluir está sempre disponível. */}
+                    {/* Excluir sempre disponível. */}
                     <button onClick={() => handleDelete(ev.id)}>Excluir</button>
                   </td>
                 </tr>
