@@ -36,3 +36,12 @@ export async function updateBet(id, changes) {
   const response = await api.patch(`/bets/${id}`, changes);
   return response.data;
 }
+
+// Busca as movimentações (transações) de um usuário, para o extrato.
+// _sort e _order são recursos do json-server: ordenam pelo campo "date" crescente, para o extrato ficar em ordem cronológica.
+export async function getTransactionsByUser(userId) {
+  const response = await api.get("/transactions", {
+    params: { userId, _sort: "date", _order: "asc" },
+  });
+  return response.data;
+}

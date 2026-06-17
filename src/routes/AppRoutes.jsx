@@ -6,6 +6,7 @@ import BetScreen from "../pages/BetScreen";
 import History from "../pages/History";
 import Ranking from "../pages/Ranking";
 import ProtectedRoute from "./ProtectedRoute";
+import Statement from "../pages/Statement";
 
 function AppRoutes() {
   return (
@@ -62,6 +63,16 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRole="user">
             <Ranking />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Extrato de movimentações do jogador (funcionalidade extra). */}
+      <Route
+        path="/statement"
+        element={
+          <ProtectedRoute allowedRole="user">
+            <Statement />
           </ProtectedRoute>
         }
       />

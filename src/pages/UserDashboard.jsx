@@ -116,6 +116,7 @@ function UserDashboard() {
         </p>
         <button onClick={() => navigate("/history")}>Meu histórico</button>
         <button onClick={() => navigate("/ranking")}>Ranking</button>
+        <button onClick={() => navigate("/statement")}>Extrato</button>
         <button onClick={signOut}>Sair</button>
       </header>
 
