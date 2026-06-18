@@ -14,8 +14,8 @@
       "email": "joao@unibet.com",
       "password": "123",
       "role": "user",
-      "balance": 1000,
-      "lastBonus": ""
+      "balance": 1200,
+      "lastBonus": "2026-06-17"
     },
     {
       "id": 3,
@@ -24,6 +24,33 @@
       "password": "123",
       "role": "user",
       "balance": 1000,
+      "lastBonus": ""
+    },
+    {
+      "id": 4,
+      "name": "Pedro Henrique",
+      "email": "pedro@unibet.com",
+      "password": "123",
+      "role": "user",
+      "balance": 1850,
+      "lastBonus": ""
+    },
+    {
+      "id": 5,
+      "name": "Ana Clara",
+      "email": "ana@unibet.com",
+      "password": "123",
+      "role": "user",
+      "balance": 760,
+      "lastBonus": ""
+    },
+    {
+      "id": 6,
+      "name": "Lucas Martins",
+      "email": "lucas@unibet.com",
+      "password": "123",
+      "role": "user",
+      "balance": 2300,
       "lastBonus": ""
     }
   ],
@@ -36,23 +63,333 @@
       "date": "2026-06-20",
       "status": "open",
       "result": "",
-      "poolA": 0,
-      "poolB": 0,
-      "poolDraw": 0
+      "hasDraw": true,
+      "live": false,
+      "poolA": 4200,
+      "poolB": 3100,
+      "poolDraw": 1800
     },
     {
       "id": 2,
+      "teamA": "Flamengo",
+      "teamB": "Palmeiras",
+      "sport": "Futebol",
+      "date": "2026-06-17",
+      "status": "open",
+      "result": "",
+      "hasDraw": true,
+      "live": true,
+      "poolA": 2600,
+      "poolB": 2400,
+      "poolDraw": 1500
+    },
+    {
+      "id": 3,
+      "teamA": "Real Madrid",
+      "teamB": "Barcelona",
+      "sport": "Futebol",
+      "date": "2026-06-21",
+      "status": "open",
+      "result": "",
+      "hasDraw": true,
+      "live": false,
+      "poolA": 5200,
+      "poolB": 4800,
+      "poolDraw": 2100
+    },
+    {
+      "id": 4,
       "teamA": "Lakers",
       "teamB": "Celtics",
       "sport": "Basquete",
       "date": "2026-06-22",
       "status": "open",
       "result": "",
-      "poolA": 0,
-      "poolB": 0,
+      "hasDraw": false,
+      "live": false,
+      "poolA": 3000,
+      "poolB": 3400,
+      "poolDraw": 0
+    },
+    {
+      "id": 5,
+      "teamA": "Warriors",
+      "teamB": "Bucks",
+      "sport": "Basquete",
+      "date": "2026-06-23",
+      "status": "open",
+      "result": "",
+      "hasDraw": false,
+      "live": false,
+      "poolA": 2800,
+      "poolB": 2600,
+      "poolDraw": 0
+    },
+    {
+      "id": 6,
+      "teamA": "Alcaraz",
+      "teamB": "Sinner",
+      "sport": "Tênis",
+      "date": "2026-06-17",
+      "status": "open",
+      "result": "",
+      "hasDraw": false,
+      "live": true,
+      "poolA": 3300,
+      "poolB": 2900,
+      "poolDraw": 0
+    },
+    {
+      "id": 7,
+      "teamA": "Djokovic",
+      "teamB": "Medvedev",
+      "sport": "Tênis",
+      "date": "2026-06-24",
+      "status": "open",
+      "result": "",
+      "hasDraw": false,
+      "live": false,
+      "poolA": 2100,
+      "poolB": 1900,
+      "poolDraw": 0
+    },
+    {
+      "id": 8,
+      "teamA": "Brasil",
+      "teamB": "Itália",
+      "sport": "Vôlei",
+      "date": "2026-06-25",
+      "status": "open",
+      "result": "",
+      "hasDraw": false,
+      "live": false,
+      "poolA": 2400,
+      "poolB": 2000,
+      "poolDraw": 0
+    },
+    {
+      "id": 9,
+      "teamA": "Adesanya",
+      "teamB": "Pereira",
+      "sport": "MMA",
+      "date": "2026-06-28",
+      "status": "open",
+      "result": "",
+      "hasDraw": false,
+      "live": false,
+      "poolA": 1800,
+      "poolB": 2200,
+      "poolDraw": 0
+    },
+    {
+      "id": 10,
+      "teamA": "FURIA",
+      "teamB": "NAVI",
+      "sport": "eSports",
+      "date": "2026-06-17",
+      "status": "open",
+      "result": "",
+      "hasDraw": false,
+      "live": true,
+      "poolA": 2700,
+      "poolB": 3100,
+      "poolDraw": 0
+    },
+    {
+      "id": 11,
+      "teamA": "T1",
+      "teamB": "G2",
+      "sport": "eSports",
+      "date": "2026-06-26",
+      "status": "open",
+      "result": "",
+      "hasDraw": false,
+      "live": false,
+      "poolA": 2500,
+      "poolB": 2300,
+      "poolDraw": 0
+    },
+    {
+      "id": 12,
+      "teamA": "Verstappen",
+      "teamB": "Hamilton",
+      "sport": "Fórmula 1",
+      "date": "2026-06-29",
+      "status": "open",
+      "result": "",
+      "hasDraw": false,
+      "live": false,
+      "poolA": 3600,
+      "poolB": 2400,
+      "poolDraw": 0
+    },
+    {
+      "id": 13,
+      "teamA": "Brasil",
+      "teamB": "Croácia",
+      "sport": "Futebol",
+      "date": "2026-06-10",
+      "status": "settled",
+      "result": "A",
+      "hasDraw": true,
+      "live": false,
+      "poolA": 3000,
+      "poolB": 2000,
+      "poolDraw": 1000
+    },
+    {
+      "id": 14,
+      "teamA": "Heat",
+      "teamB": "Nuggets",
+      "sport": "Basquete",
+      "date": "2026-06-12",
+      "status": "settled",
+      "result": "B",
+      "hasDraw": false,
+      "live": false,
+      "poolA": 2500,
+      "poolB": 3500,
       "poolDraw": 0
     }
   ],
-  "bets": [],
-  "transactions": []
+  "bets": [
+    {
+      "id": 1,
+      "userId": 2,
+      "eventId": 13,
+      "pick": "A",
+      "amount": 200,
+      "oddAtBet": 1.9,
+      "status": "won",
+      "payout": 380
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "eventId": 14,
+      "pick": "A",
+      "amount": 80,
+      "oddAtBet": 2.28,
+      "status": "lost",
+      "payout": 0
+    },
+    {
+      "id": 3,
+      "userId": 2,
+      "eventId": 1,
+      "pick": "A",
+      "amount": 100,
+      "oddAtBet": 1.8,
+      "status": "pending",
+      "payout": 0
+    },
+    {
+      "id": 4,
+      "userId": 2,
+      "eventId": 2,
+      "pick": "A",
+      "amount": 50,
+      "oddAtBet": 2.1,
+      "status": "pending",
+      "payout": 0
+    },
+    {
+      "id": 5,
+      "userId": 6,
+      "eventId": 13,
+      "pick": "A",
+      "amount": 300,
+      "oddAtBet": 1.9,
+      "status": "won",
+      "payout": 570
+    },
+    {
+      "id": 6,
+      "userId": 4,
+      "eventId": 14,
+      "pick": "B",
+      "amount": 150,
+      "oddAtBet": 1.63,
+      "status": "won",
+      "payout": 244.5
+    },
+    {
+      "id": 7,
+      "userId": 5,
+      "eventId": 13,
+      "pick": "B",
+      "amount": 120,
+      "oddAtBet": 2.85,
+      "status": "lost",
+      "payout": 0
+    },
+    {
+      "id": 8,
+      "userId": 3,
+      "eventId": 1,
+      "pick": "B",
+      "amount": 90,
+      "oddAtBet": 2.44,
+      "status": "pending",
+      "payout": 0
+    }
+  ],
+  "transactions": [
+    {
+      "id": 1,
+      "userId": 2,
+      "type": "bonus",
+      "value": 1000,
+      "description": "Bônus de boas-vindas",
+      "date": "2026-06-09T10:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "type": "bet",
+      "value": -200,
+      "description": "Aposta em Brasil x Croácia",
+      "date": "2026-06-10T15:30:00.000Z"
+    },
+    {
+      "id": 3,
+      "userId": 2,
+      "type": "prize",
+      "value": 380,
+      "description": "Prêmio: Brasil x Croácia",
+      "date": "2026-06-10T22:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "userId": 2,
+      "type": "bet",
+      "value": -80,
+      "description": "Aposta em Heat x Nuggets",
+      "date": "2026-06-12T20:00:00.000Z"
+    },
+    {
+      "id": 5,
+      "userId": 2,
+      "type": "bonus",
+      "value": 200,
+      "description": "Bônus diário de login",
+      "date": "2026-06-17T09:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "userId": 2,
+      "type": "bet",
+      "value": -100,
+      "description": "Aposta em Brasil x Argentina",
+      "date": "2026-06-17T12:00:00.000Z"
+    },
+    {
+      "id": 7,
+      "userId": 2,
+      "type": "bet",
+      "value": -50,
+      "description": "Aposta em Flamengo x Palmeiras",
+      "date": "2026-06-17T12:05:00.000Z"
+    }
+  ]
 }

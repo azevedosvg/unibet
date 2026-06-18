@@ -1,6 +1,6 @@
-// Permite cadastrar novos eventos e listar os já existentes.
-
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Plus, Trash2, Lock, Unlock, Trophy } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import {
   getEvents,
@@ -9,269 +9,268 @@ import {
   deleteEvent,
 } from "../services/eventService";
 import { settleEvent } from "../services/settlementService";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import Badge from "../components/ui/Badge";
 
 function AdminDashboard() {
-  // signOut vem do contexto: usado no botão de sair.
-  const { signOut, user } = useAuth();
-
-  // Estado da lista de evento
-  // Guarda os eventos vindos da API. Começa como array vazio.
+  const { user } = useAuth();
   const [events, setEvents] = useState([]);
-
-  // Estados do formulário de cadastro (componentes controlados)
   const [teamA, setTeamA] = useState("");
   const [teamB, setTeamB] = useState("");
   const [sport, setSport] = useState("");
   const [date, setDate] = useState("");
-
-  // Mensagem de feedback para o admin (sucesso ou erro do cadastro).
-  // type vai diferenciar mensagem de sucesso e de erro (melhora na estilização)
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // "success" ou "error"
+  const [messageType, setMessageType] = useState("");
 
-  // Função que busca os eventos na API e atualiza o estado.
-  // Deixo separada para poder chamá-la tanto ao abrir a tela, quanto depois de cadastrar um evento novo (para a lista atualizar).
   async function loadEvents() {
     const data = await getEvents();
     setEvents(data);
   }
-
-  // useEffect roda código em momentos específicos do ciclo de vida do componente.
-  // Com o array vazio [] no final, ele roda UMA vez, logo quando a tela aparece.
-  // Uso para carregar os eventos assim que o painel abre.
   useEffect(() => {
     loadEvents();
   }, []);
 
-  // Função chamada ao enviar o formulário de cadastro.
   async function handleCreate(event) {
-    event.preventDefault(); // impede o recarregamento padrão do formulário
+    event.preventDefault();
     setMessage("");
-
-    // Validações antes de enviar para a API
-    // 1) Os dois lados não podem ser o mesmo time
-    // .trim() para remover espaços nas pontas; .toLowerCase() para ignorar maiúsculas/minúsculas
-    // Logo, "Brasil" e "brasil" são tratados como iguais
     if (teamA.trim().toLowerCase() === teamB.trim().toLowerCase()) {
       setMessageType("error");
       setMessage("Os dois lados não podem ser o mesmo time.");
-      return; // interrompe -- não envia para a API
+      return;
     }
-
-    // 2) A data não pode estar no passado
-    // Comparo a data escolhida com a data de hoje
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // zera o horário para comparar só o dia
-    const selectedDate = new Date(date + "T00:00:00"); // interpreta como data local
-
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(date + "T00:00:00");
     if (selectedDate < today) {
       setMessageType("error");
       setMessage("A data do evento não pode estar no passado.");
       return;
     }
-
-    // Passou nas validações, entra para a API
     try {
       await createEvent({ teamA, teamB, sport, date });
-
       setMessageType("success");
       setMessage("Evento cadastrado com sucesso!");
-
-      // Limpa os campos do formulário após cadastro
       setTeamA("");
       setTeamB("");
       setSport("");
       setDate("");
-
-      // Recarrega a lista para o evento novo aparecer
       loadEvents();
-    } catch (err) {
+    } catch {
       setMessageType("error");
       setMessage("Erro ao cadastrar evento. Tente novamente.");
     }
   }
 
-  // Liquida um evento: lança o resultado e paga os vencedores.
-  // winningSide é "A", "B" ou "Draw" (quem venceu).
-  async function handleSettle(id, winningSide) {
-    // Liquidar é irreversível (mexe em saldos), então pede confirmação.
-    const confirmed = window.confirm(
-      "Confirmar o resultado? Isso vai pagar os vencedores e não pode ser desfeito.",
-    );
-    if (!confirmed) return;
-
-    // Chama o service que faz todo o trabalho pesado.
-    await settleEvent(id, winningSide);
-
-    // Recarrega a lista para o status do evento aparecer como "settled".
-    loadEvents();
-  }
-
-  // Encerra as apostas de um evento: muda o status de "open" para "closed".
-  // PATCH envia só o campo status: o resto do evento continua intacto
   async function handleCloseBets(id) {
     await updateEvent(id, { status: "closed" });
-    loadEvents(); // recarrega a lista para refletir o novo status
+    loadEvents();
   }
-
-  // Reabre as apostas de um evento (volta de 'closed' para 'open')
-  // Útil se o admin encerrour por engano.
   async function handleReopenBets(id) {
     await updateEvent(id, { status: "open" });
     loadEvents();
   }
-
-  // Exclui um evento. Pede confirmação antes, porque é uma ação irreversível.
   async function handleDelete(id) {
-    const confirmed = window.confirm(
-      "Tem certeza que deseja excluir este evento? Esta ação é irreversível.",
-    );
-    if (!confirmed) return; // Se o admin cancelar, não faz nada
-
+    if (!window.confirm("Tem certeza que deseja excluir este evento?")) return;
     await deleteEvent(id);
     loadEvents();
   }
+  async function handleSettle(id, winningSide) {
+    if (
+      !window.confirm(
+        "Confirmar o resultado? Isso vai pagar os vencedores e não pode ser desfeito.",
+      )
+    )
+      return;
+    await settleEvent(id, winningSide);
+    loadEvents();
+  }
+
+  // Helper: traduz o status para um Badge colorido.
+  function statusBadge(status) {
+    if (status === "open")
+      return (
+        <Badge variant="win" dot>
+          Aberto
+        </Badge>
+      );
+    if (status === "closed") return <Badge variant="gold">Encerrado</Badge>;
+    if (status === "settled")
+      return <Badge variant="neutral">Finalizado</Badge>;
+    return null;
+  }
 
   return (
-    <div>
-      {/* Cabeçalho com saudação e botão de sair */}
-      <header>
-        <h1>Painel do Administrador</h1>
-        <p>Olá, {user?.name}</p>
-        <button onClick={signOut}>Sair</button>
-      </header>
+    <div className="max-w-3xl lg:max-w-5xl mx-auto py-6 sm:py-8">
+      {/* Título do painel (logo e sair ficam no header global). */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold">Painel do administrador</h1>
+        <p className="text-xs text-muted mt-1">Bem-vindo, {user?.name}</p>
+      </div>
 
-      {/* Formulário de cadastro de evento */}
-      <section>
-        <h2>Cadastrar novo evento</h2>
+      {/* Formulário de cadastro */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-surface border border-line rounded-2xl p-6 mb-8"
+      >
+        <div className="flex items-center gap-2 mb-5">
+          <Plus size={18} className="text-gold" />
+          <h2 className="font-bold">Cadastrar novo evento</h2>
+        </div>
         <form onSubmit={handleCreate}>
-          <div>
-            <label>Time / Lado A</label>
-            <input
+          <div className="grid sm:grid-cols-2 gap-4 mb-4">
+            <Input
+              label="Time / Lado A"
               type="text"
               value={teamA}
               onChange={(e) => setTeamA(e.target.value)}
               placeholder="Ex: Brasil"
               required
             />
-          </div>
-
-          <div>
-            <label>Time / Lado B</label>
-            <input
+            <Input
+              label="Time / Lado B"
               type="text"
               value={teamB}
               onChange={(e) => setTeamB(e.target.value)}
               placeholder="Ex: Argentina"
               required
             />
-          </div>
-
-          <div>
-            <label>Esporte</label>
-            <input
+            <Input
+              label="Esporte"
               type="text"
               value={sport}
               onChange={(e) => setSport(e.target.value)}
               placeholder="Ex: Futebol"
               required
             />
-          </div>
-
-          <div>
-            <label>Data do evento</label>
-            <input
+            <Input
+              label="Data do evento"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
             />
           </div>
-
-          <button type="submit">Cadastrar evento</button>
+          <Button
+            type="submit"
+            variant="gold"
+            className="flex items-center gap-2"
+          >
+            <Plus size={16} /> Cadastrar evento
+          </Button>
+          {message && (
+            <p
+              className={`text-sm mt-3 ${messageType === "error" ? "text-loss" : "text-win"}`}
+            >
+              {message}
+            </p>
+          )}
         </form>
+      </motion.div>
 
-        {/* Mensagem de feedback (só aparece se houver texto) */}
-        {message && (
-          <p className={messageType === "error" ? "msg-error" : "msg-success"}>
-            {message}
-          </p>
-        )}
-      </section>
+      {/* Lista de eventos */}
+      <h2 className="text-sm font-bold tracking-widest uppercase mb-4">
+        Eventos cadastrados
+      </h2>
 
-      {/* Lista dos eventos já cadastrados */}
-      <section>
-        <h2>Eventos cadastrados</h2>
+      {events.length === 0 ? (
+        <p className="text-muted py-8 text-center">
+          Nenhum evento cadastrado ainda.
+        </p>
+      ) : (
+        <div className="grid gap-3 lg:grid-cols-2">
+          {events.map((ev, index) => (
+            <motion.div
+              key={ev.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.06 }}
+              className="bg-surface border border-line rounded-2xl p-5"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <p className="font-bold">
+                    {ev.teamA} × {ev.teamB}
+                  </p>
+                  <p className="text-xs text-muted mt-0.5">
+                    {ev.sport} · {ev.date}
+                  </p>
+                </div>
+                {statusBadge(ev.status)}
+              </div>
 
-        {/* Se não houver eventos, mostra um aviso. */}
-        {events.length === 0 ? (
-          <p>Nenhum evento cadastrado ainda.</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Confronto</th>
-                <th>Esporte</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {events.map((ev) => (
-                <tr key={ev.id}>
-                  <td>
-                    {ev.teamA} x {ev.teamB}
-                  </td>
-                  <td>{ev.sport}</td>
-                  <td>{ev.date}</td>
-                  <td>{ev.status}</td>
-                  <td>
-                    {/* Evento aberto: pode encerrar as apostas. */}
-                    {ev.status === "open" && (
-                      <button onClick={() => handleCloseBets(ev.id)}>
-                        Encerrar apostas
-                      </button>
-                    )}
+              {/* Ações conforme o status */}
+              <div className="flex flex-wrap items-center gap-2">
+                {ev.status === "open" && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleCloseBets(ev.id)}
+                    className="flex items-center gap-1.5 !py-1.5 !text-xs"
+                  >
+                    <Lock size={14} /> Encerrar apostas
+                  </Button>
+                )}
 
-                    {/* Evento encerrado: hora de lançar o resultado. */}
-                    {/* Cada botão informa qual lado venceu e dispara a liquidação. */}
-                    {ev.status === "closed" && (
-                      <div className="settle-actions">
-                        <span>Vencedor: </span>
-                        <button onClick={() => handleSettle(ev.id, "A")}>
-                          {ev.teamA}
-                        </button>
-                        <button onClick={() => handleSettle(ev.id, "Draw")}>
-                          Empate
-                        </button>
-                        <button onClick={() => handleSettle(ev.id, "B")}>
-                          {ev.teamB}
-                        </button>
-                      </div>
-                    )}
+                {ev.status === "closed" && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleReopenBets(ev.id)}
+                      className="flex items-center gap-1.5 !py-1.5 !text-xs"
+                    >
+                      <Unlock size={14} /> Reabrir
+                    </Button>
+                    <span className="text-xs text-muted ml-1">Vencedor:</span>
+                    <Button
+                      variant="gold"
+                      onClick={() => handleSettle(ev.id, "A")}
+                      className="!py-1.5 !text-xs"
+                    >
+                      {ev.teamA}
+                    </Button>
+                    <Button
+                      variant="gold"
+                      onClick={() => handleSettle(ev.id, "Draw")}
+                      className="!py-1.5 !text-xs"
+                    >
+                      Empate
+                    </Button>
+                    <Button
+                      variant="gold"
+                      onClick={() => handleSettle(ev.id, "B")}
+                      className="!py-1.5 !text-xs"
+                    >
+                      {ev.teamB}
+                    </Button>
+                  </>
+                )}
 
-                    {/* Evento liquidado: mostra o resultado final. */}
-                    {ev.status === "settled" && (
-                      <span>
-                        Finalizado · Resultado:{" "}
-                        {ev.result === "A"
-                          ? ev.teamA
-                          : ev.result === "B"
-                            ? ev.teamB
-                            : "Empate"}
-                      </span>
-                    )}
+                {ev.status === "settled" && (
+                  <span className="flex items-center gap-1.5 text-sm text-muted">
+                    <Trophy size={14} className="text-gold" />
+                    Resultado:{" "}
+                    {ev.result === "A"
+                      ? ev.teamA
+                      : ev.result === "B"
+                        ? ev.teamB
+                        : "Empate"}
+                  </span>
+                )}
 
-                    {/* Excluir sempre disponível. */}
-                    <button onClick={() => handleDelete(ev.id)}>Excluir</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+                <button
+                  onClick={() => handleDelete(ev.id)}
+                  className="ml-auto p-1.5 rounded-lg hover:bg-loss/10 transition-colors"
+                  title="Excluir"
+                >
+                  <Trash2 size={16} className="text-loss" />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

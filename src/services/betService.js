@@ -45,3 +45,9 @@ export async function getTransactionsByUser(userId) {
   });
   return response.data;
 }
+
+// Busca todas as apostas (usado no ranking, para calcular o lucro de cada jogador).
+export async function getAllBets() {
+  const response = await api.get("/bets");
+  return response.data;
+}

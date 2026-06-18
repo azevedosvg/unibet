@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import Home from "../pages/Home";
 import Login from "../pages/Login";
 import AdminDashboard from "../pages/AdminDashboard";
 import UserDashboard from "../pages/UserDashboard";
@@ -11,8 +12,8 @@ import Statement from "../pages/Statement";
 function AppRoutes() {
   return (
     <Routes>
-      {/* Rota raiz, redireciona para o login. */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* Home pública: vitrine de eventos, aberta a qualquer visitante. */}
+      <Route path="/" element={<Home />} />
 
       {/* Tela de login (rota pública). */}
       <Route path="/login" element={<Login />} />
@@ -77,8 +78,8 @@ function AppRoutes() {
         }
       />
 
-      {/* Rota coringa: qualquer URL inexistente cai no login. */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* Rota coringa: qualquer URL inexistente cai na Home. */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

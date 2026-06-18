@@ -1,0 +1,34 @@
+/* Ponto de entrada do Tailwind + estilos base do Uni Bet. */
+
+/* Estas três diretivas injetam o Tailwind. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Estilos base globais --- */
+@layer base {
+  body {
+    /* Aplica fundo e texto padrão usando as cores do tema (via @apply).
+       O fundo "vivo" (foto de esporte + brilhos) é uma camada fixa no App.jsx. */
+    @apply bg-bg text-ink font-sans;
+    min-height: 100vh;
+  }
+
+  /* Remove as setinhas (spinners) brancas do input numérico — elas têm
+     fundo claro do navegador e destoam do tema escuro do site. */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  /* Deixa o ícone do seletor de data claro para aparecer no fundo escuro. */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.85);
+    cursor: pointer;
+  }
+}
