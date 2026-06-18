@@ -48,7 +48,6 @@ via JSON Server.
 15. [Estrutura de dados (db.json)](#15-estrutura-de-dados-dbjson)
 16. [Padrão de commits](#16-padrão-de-commits)
 17. [Dificuldades encontradas](#17-dificuldades-encontradas)
-18. [Melhorias futuras](#18-melhorias-futuras)
 
 ---
 
@@ -446,14 +445,3 @@ do repositório:
   redirecionamentos adequados, foi resolvido com um componente de rota protegida reutilizável.
 - **Persistência de sessão.** Evitar que o usuário fosse deslogado ao recarregar a página foi
   resolvido espelhando a sessão no `localStorage`.
-
----
-
-## 18. Melhorias futuras
-
-- Hash de senhas e autenticação com token (atualmente o login é simulado para fins acadêmicos).
-- Backend real, substituindo o JSON Server por uma API com banco de dados persistente.
-- Bloqueio automático de apostas quando o evento atinge a data/horário de início.
-- Paginação e busca no histórico e no painel administrativo.
-- Testes automatizados (unitários e de integração) para regras de negócio críticas.
-- Painel estatístico do administrador com indicadores de volume e resultado por evento.
