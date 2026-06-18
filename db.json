@@ -14,7 +14,7 @@
       "email": "joao@unibet.com",
       "password": "123",
       "role": "user",
-      "balance": 899,
+      "balance": 799,
       "lastBonus": "2026-06-18"
     },
     {
@@ -85,7 +85,7 @@
       "live": false,
       "poolA": 4200,
       "poolB": 3100,
-      "poolDraw": 1800
+      "poolDraw": 1900
     },
     {
       "id": 2,
@@ -888,6 +888,16 @@
       "oddAtBet": 1.58,
       "status": "won",
       "payout": 79
+    },
+    {
+      "userId": 2,
+      "eventId": 1,
+      "pick": "Draw",
+      "amount": 100,
+      "oddAtBet": 4.8,
+      "status": "pending",
+      "payout": 0,
+      "id": 39
     }
   ],
   "transactions": [
@@ -1314,6 +1324,14 @@
       "description": "Bônus diário de login",
       "date": "2026-06-18T02:01:56.304Z",
       "id": 53
+    },
+    {
+      "userId": 2,
+      "type": "bet",
+      "value": -100,
+      "description": "Aposta em Brasil x Argentina",
+      "date": "2026-06-18T02:47:16.234Z",
+      "id": 54
     }
   ]
 }
