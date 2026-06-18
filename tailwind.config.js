@@ -18,8 +18,8 @@ export default {
         surface: "#16172A", // superfície de cartões
         surface2: "#1F2040", // superfície elevada
         line: "#30315A", // bordas (índigo, mais visíveis/marcadas)
-        ink: "#EFEFF8", // texto principal (branco frio)
-        muted: "#9596B8", // texto secundário
+        ink: "#F6F6FD", // texto principal (branco frio, quase puro)
+        muted: "#C2C3E6", // texto secundário (lavanda claro, bem mais legível)
         gold: {
           DEFAULT: "#8B7CFF", // acento primário (violeta) -> text-gold/bg-gold
           light: "#B6ABFF", // violeta claro -> text-gold-light

@@ -115,7 +115,7 @@ function Footer() {
         <div className="h-px bg-line my-7" />
 
         {/* Aviso fictício + créditos do trabalho. */}
-        <div className="flex flex-col gap-3 text-xs text-muted/70">
+        <div className="flex flex-col gap-3 text-xs text-muted">
           <p>
             +18 · Plataforma fictícia, sem dinheiro real, criada para fins
             exclusivamente acadêmicos.

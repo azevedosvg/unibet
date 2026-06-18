@@ -50,7 +50,7 @@ function SideItem({ icon: Icon, label, count, active, onClick, accent }) {
       <Icon size={17} className={accent} />
       <span className="flex-1 text-left truncate">{label}</span>
       {count != null && (
-        <span className="text-xs font-mono text-muted/70">{count}</span>
+        <span className="text-xs font-mono text-muted">{count}</span>
       )}
     </button>
   );
@@ -59,7 +59,7 @@ function SideItem({ icon: Icon, label, count, active, onClick, accent }) {
 // Título de seção da barra.
 function SectionTitle({ children }) {
   return (
-    <p className="px-3 mt-5 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted/60">
+    <p className="px-3 mt-5 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted/80">
       {children}
     </p>
   );

@@ -183,7 +183,7 @@ function Login() {
         transition={{ delay: 0.4 }}
         className="mt-6 text-center"
       >
-        <p className="text-muted/60 text-xs font-mono">
+        <p className="text-muted/80 text-xs font-mono">
           admin@unibet.com · joao@unibet.com · senha 123
         </p>
       </motion.div>

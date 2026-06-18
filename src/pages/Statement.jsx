@@ -83,7 +83,7 @@ function Statement() {
                   <div>
                     <p className="font-bold text-sm">{info.label}</p>
                     <p className="text-xs text-muted">{row.description}</p>
-                    <p className="text-[10px] text-muted/60 font-mono">
+                    <p className="text-[10px] text-muted/80 font-mono">
                       {formatDate(row.date)}
                     </p>
                   </div>

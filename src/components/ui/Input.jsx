@@ -24,7 +24,7 @@ function Input({ label, className = "", append, ...rest }) {
           className={`
             w-full px-4 py-3 rounded-xl font-sans
             bg-bg border border-line text-ink
-            placeholder:text-muted/60
+            placeholder:text-muted/70
             focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20
             transition-all duration-200
             ${append ? "pr-11" : ""}
