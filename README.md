@@ -157,7 +157,7 @@ unibet/
 ### Instalação
 
 ```bash
-git clone <URL-do-repositorio>
+git clone https://github.com/azevedosvg/unibet.git
 cd unibet
 npm install
 ```
