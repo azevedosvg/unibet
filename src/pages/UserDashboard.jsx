@@ -15,6 +15,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import { getEvents } from "../services/eventService";
 import { getBetsByUser } from "../services/betService";
+import { getUserById } from "../services/userService";
 import { formatMoney } from "../utils/format";
 import EventCard from "../components/EventCard";
 import Sidebar from "../components/Sidebar";
@@ -54,10 +55,23 @@ function StatCard({ icon: Icon, label, value, sub, tint, iconColor, valueColor, 
 }
 
 function UserDashboard() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [bets, setBets] = useState([]);
+
+  // Ao abrir a banca, re-busca o saldo atual na API. Assim, se o admin liquidou
+  // um evento e creditou um prêmio enquanto o jogador estava em outra tela, o
+  // saldo aqui (e no cabeçalho global) aparece já atualizado.
+  useEffect(() => {
+    async function syncBalance() {
+      const fresh = await getUserById(user.id);
+      setUser(fresh);
+    }
+    syncBalance();
+    // Sincroniza apenas pelo id; setUser é estável.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.id]);
 
   useEffect(() => {
     async function loadEvents() {

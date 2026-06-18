@@ -204,7 +204,7 @@ Todos os usuários utilizam a senha **`123`**.
 | Perfil        | Nome           | E-mail              | Saldo inicial |
 | ------------- | -------------- | ------------------- | ------------- |
 | Administrador | Administrador  | `admin@unibet.com`  | U$ 0          |
-| Jogador       | João Silva     | `joao@unibet.com`   | U$ 699,00     |
+| Jogador       | João Silva     | `joao@unibet.com`   | U$ 899,00     |
 | Jogador       | Maria Souza    | `maria@unibet.com`  | U$ 640,00     |
 | Jogador       | Pedro Henrique | `pedro@unibet.com`  | U$ 652,20     |
 | Jogador       | Ana Clara      | `ana@unibet.com`    | U$ 788,60     |
@@ -413,7 +413,7 @@ A base simulada possui quatro coleções:
   `date`.
 
 A base já vem populada com 8 usuários, 31 eventos (abertos, ao vivo e finalizados, em diversos
-esportes), 38 apostas (pendentes, ganhas e perdidas) e 52 movimentações, todas internamente
+esportes), 38 apostas (pendentes, ganhas e perdidas) e 53 movimentações, todas internamente
 consistentes (odds derivadas dos _pools_, retornos compatíveis com `valor × odd` e saldo igual à
 soma do extrato de cada jogador).
 

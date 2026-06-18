@@ -63,6 +63,7 @@ export function ToastProvider({ children }) {
 }
 
 // 3: Hook de atalho para os componentes dispararem toasts.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useToast() {
   return useContext(ToastContext);
 }

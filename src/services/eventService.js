@@ -24,6 +24,8 @@ export async function createEvent(data) {
     ...data,
     status: "open", // aberto para apostas assim que é criado
     result: "", // ainda sem resultado
+    hasDraw: data.hasDraw ?? false, // permite empate? (definido no formulário do admin)
+    live: false, // evento novo não nasce "ao vivo"
     poolA: 0, // bolão do time A começa zerado
     poolB: 0, // bolão do time B começa zerado
     poolDraw: 0, // bolão do empate começa zerado

@@ -20,6 +20,7 @@ function AdminDashboard() {
   const [teamB, setTeamB] = useState("");
   const [sport, setSport] = useState("");
   const [date, setDate] = useState("");
+  const [hasDraw, setHasDraw] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
@@ -28,6 +29,7 @@ function AdminDashboard() {
     setEvents(data);
   }
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadEvents();
   }, []);
 
@@ -48,13 +50,14 @@ function AdminDashboard() {
       return;
     }
     try {
-      await createEvent({ teamA, teamB, sport, date });
+      await createEvent({ teamA, teamB, sport, date, hasDraw });
       setMessageType("success");
       setMessage("Evento cadastrado com sucesso!");
       setTeamA("");
       setTeamB("");
       setSport("");
       setDate("");
+      setHasDraw(false);
       loadEvents();
     } catch {
       setMessageType("error");
@@ -153,6 +156,18 @@ function AdminDashboard() {
               required
             />
           </div>
+          {/* Empate: esportes como futebol têm; tênis, MMA, F1 etc. não. */}
+          <label className="flex items-center gap-2 mb-4 cursor-pointer select-none w-fit">
+            <input
+              type="checkbox"
+              checked={hasDraw}
+              onChange={(e) => setHasDraw(e.target.checked)}
+              className="w-4 h-4 accent-gold"
+            />
+            <span className="text-sm text-muted">
+              Permite empate (futebol, etc.)
+            </span>
+          </label>
           <Button
             type="submit"
             variant="gold"
@@ -230,13 +245,16 @@ function AdminDashboard() {
                     >
                       {ev.teamA}
                     </Button>
-                    <Button
-                      variant="gold"
-                      onClick={() => handleSettle(ev.id, "Draw")}
-                      className="!py-1.5 !text-xs"
-                    >
-                      Empate
-                    </Button>
+                    {/* Só oferece "Empate" quando o evento realmente admite empate. */}
+                    {ev.hasDraw && (
+                      <Button
+                        variant="gold"
+                        onClick={() => handleSettle(ev.id, "Draw")}
+                        className="!py-1.5 !text-xs"
+                      >
+                        Empate
+                      </Button>
+                    )}
                     <Button
                       variant="gold"
                       onClick={() => handleSettle(ev.id, "B")}
