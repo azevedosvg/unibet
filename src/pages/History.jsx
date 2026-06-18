@@ -1,30 +1,22 @@
-// Histórico de apostas do jogador logado.
-// Mostra todas as apostas com o confronto, o palpite, o valor, a odd e o status.
-// Permite filtrar por status (todas, pendentes, ganhas, perdidas).
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { getBetsByUser } from "../services/betService";
 import { getEvents } from "../services/eventService";
+import { formatMoney } from "../utils/format";
+import Badge from "../components/ui/Badge";
 
 function History() {
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  // Lista de apostas do jogador.
   const [bets, setBets] = useState([]);
-  // Lista de eventos (para cruzar e mostrar o nome do confronto).
   const [events, setEvents] = useState([]);
-  // Filtro de status selecionado. "all" mostra todas.
   const [filter, setFilter] = useState("all");
 
-  // Carrega apostas e eventos ao abrir a tela.
   useEffect(() => {
     async function loadData() {
-      // Busca em paralelo: as apostas do usuário e todos os eventos.
-      // Promise.all dispara as duas chamadas ao mesmo tempo e espera ambas,
-      // o que é mais rápido do que uma depois da outra.
       const [userBets, allEvents] = await Promise.all([
         getBetsByUser(user.id),
         getEvents(),
@@ -35,15 +27,11 @@ function History() {
     loadData();
   }, [user.id]);
 
-  // Dado um eventId, encontra o evento correspondente para exibir o confronto.
   function getEventLabel(eventId) {
-    // .find() retorna o primeiro evento cujo id bate, ou undefined se não achar.
     const ev = events.find((e) => e.id === eventId);
     if (!ev) return "Evento removido";
     return `${ev.teamA} x ${ev.teamB}`;
   }
-
-  // Traduz o palpite (código interno) para texto legível.
   function getPickLabel(bet) {
     const ev = events.find((e) => e.id === bet.eventId);
     if (!ev) return bet.pick;
@@ -51,65 +39,91 @@ function History() {
     if (bet.pick === "B") return ev.teamB;
     return "Empate";
   }
-
-  // Traduz o status (código interno) para texto em português.
-  function getStatusLabel(status) {
-    if (status === "pending") return "Pendente";
-    if (status === "won") return "Ganhou";
-    if (status === "lost") return "Perdeu";
-    return status;
+  function statusBadge(status) {
+    if (status === "pending") return <Badge variant="gold">Pendente</Badge>;
+    if (status === "won") return <Badge variant="win">Ganhou</Badge>;
+    if (status === "lost") return <Badge variant="loss">Perdeu</Badge>;
+    return null;
   }
 
-  // Aplica o filtro: se "all", mostra todas; senão, só as do status escolhido.
   const filteredBets =
     filter === "all" ? bets : bets.filter((b) => b.status === filter);
 
-  return (
-    <div>
-      <header>
-        <h1>Meu histórico de apostas</h1>
-        <button onClick={() => navigate("/dashboard")}>Voltar</button>
-      </header>
+  // Filtros disponíveis (gera os botões dinamicamente).
+  const filters = [
+    { key: "all", label: "Todas" },
+    { key: "pending", label: "Pendentes" },
+    { key: "won", label: "Ganhas" },
+    { key: "lost", label: "Perdidas" },
+  ];
 
-      {/* Botões de filtro por status */}
-      <div className="history-filters">
-        <button onClick={() => setFilter("all")}>Todas</button>
-        <button onClick={() => setFilter("pending")}>Pendentes</button>
-        <button onClick={() => setFilter("won")}>Ganhas</button>
-        <button onClick={() => setFilter("lost")}>Perdidas</button>
+  return (
+    <div className="max-w-2xl lg:max-w-3xl mx-auto py-6 sm:py-8">
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="flex items-center gap-1.5 text-muted hover:text-ink transition-colors"
+        >
+          <ArrowLeft size={18} /> Voltar
+        </button>
       </div>
 
-      <section>
-        {filteredBets.length === 0 ? (
-          <p>Nenhuma aposta encontrada.</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Confronto</th>
-                <th>Palpite</th>
-                <th>Valor</th>
-                <th>Odd</th>
-                <th>Status</th>
-                <th>Retorno</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredBets.map((bet) => (
-                <tr key={bet.id}>
-                  <td>{getEventLabel(bet.eventId)}</td>
-                  <td>{getPickLabel(bet)}</td>
-                  <td>U$ {bet.amount}</td>
-                  <td>{bet.oddAtBet?.toFixed(2)}</td>
-                  <td>{getStatusLabel(bet.status)}</td>
-                  {/* Mostra o retorno só se a aposta foi ganha. */}
-                  <td>{bet.status === "won" ? `U$ ${bet.payout}` : "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+      <h1 className="text-2xl font-bold mb-1">Meu histórico</h1>
+      <p className="text-sm text-muted mb-6">Todas as suas apostas</p>
+
+      {/* Filtros: chips que destacam o ativo em dourado. */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {filters.map((f) => (
+          <button
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className={`px-4 py-1.5 rounded-full text-sm border transition-colors
+              ${
+                filter === f.key
+                  ? "bg-gold text-bg border-gold font-bold"
+                  : "bg-surface text-muted border-line hover:border-gold/40"
+              }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {filteredBets.length === 0 ? (
+        <p className="text-muted py-8 text-center">
+          Nenhuma aposta encontrada.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {filteredBets.map((bet, index) => (
+            <motion.div
+              key={bet.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="bg-surface border border-line rounded-2xl p-4 flex items-center justify-between"
+            >
+              <div>
+                <p className="font-bold">{getEventLabel(bet.eventId)}</p>
+                <p className="text-xs text-muted mt-0.5">
+                  Palpite: {getPickLabel(bet)} · Odd {bet.oddAtBet?.toFixed(2)}
+                </p>
+                <p className="text-sm font-mono mt-1">
+                  {formatMoney(bet.amount)}
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-1.5">
+                {statusBadge(bet.status)}
+                {bet.status === "won" && (
+                  <span className="text-win font-mono font-bold text-sm">
+                    +{formatMoney(bet.payout)}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

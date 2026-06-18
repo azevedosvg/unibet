@@ -1,97 +1,109 @@
-// Extrato de movimentações do jogador (FUNCIONALIDADE EXTRA).
-// Mostra cada entrada/saída de saldo em ordem cronológica, com o saldo acumulado calculado linha a linha, como um extrato bancário.
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft, ArrowDownLeft, ArrowUpRight, Gift } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { getTransactionsByUser } from "../services/betService";
+import { formatMoney } from "../utils/format";
 
 function Statement() {
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  // Lista de movimentações já com o saldo acumulado calculado.
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
     async function loadStatement() {
-      // Busca as movimentações do jogador em ordem cronológica.
       const transactions = await getTransactionsByUser(user.id);
-
-      // Calcula o saldo acumulado linha a linha.
-      // running guarda o saldo que vai se acumulando conforme percorremos.
       let running = 0;
       const withBalance = transactions.map((t) => {
-        // Soma o valor da movimentação ao acumulado (valores já têm sinal:
-        // apostas são negativas, prêmios e bônus são positivos).
         running = running + t.value;
-        // Devolve a movimentação + o saldo acumulado naquele ponto.
         return { ...t, runningBalance: running };
       });
-
       setRows(withBalance);
     }
-
     loadStatement();
   }, [user.id]);
 
-  // Traduz o tipo de movimentação (código interno) para texto em português.
-  function getTypeLabel(type) {
-    if (type === "bet") return "Aposta";
-    if (type === "prize") return "Prêmio";
-    if (type === "bonus") return "Bônus";
-    return type;
+  function formatDate(isoDate) {
+    return new Date(isoDate).toLocaleString("pt-BR");
   }
 
-  // Formata a data ISO para um formato legível (dd/mm/aaaa hh:mm).
-  function formatDate(isoDate) {
-    const d = new Date(isoDate);
-    // toLocaleString com "pt-BR" formata na convenção brasileira.
-    return d.toLocaleString("pt-BR");
+  // Ícone e rótulo conforme o tipo de movimentação.
+  function typeInfo(type) {
+    if (type === "bet")
+      return {
+        label: "Aposta",
+        icon: <ArrowUpRight size={16} className="text-loss" />,
+      };
+    if (type === "prize")
+      return {
+        label: "Prêmio",
+        icon: <ArrowDownLeft size={16} className="text-win" />,
+      };
+    if (type === "bonus")
+      return { label: "Bônus", icon: <Gift size={16} className="text-gold" /> };
+    return { label: type, icon: null };
   }
 
   return (
-    <div>
-      <header>
-        <h1>Extrato de movimentações</h1>
-        <button onClick={() => navigate("/dashboard")}>Voltar</button>
-      </header>
+    <div className="max-w-2xl lg:max-w-3xl mx-auto py-6 sm:py-8">
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="flex items-center gap-1.5 text-muted hover:text-ink transition-colors"
+        >
+          <ArrowLeft size={18} /> Voltar
+        </button>
+      </div>
 
-      <section>
-        {rows.length === 0 ? (
-          <p>Nenhuma movimentação registrada ainda.</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Tipo</th>
-                <th>Descrição</th>
-                <th>Valor</th>
-                <th>Saldo acumulado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.id}>
-                  <td>{formatDate(row.date)}</td>
-                  <td>{getTypeLabel(row.type)}</td>
-                  <td>{row.description}</td>
-                  {/* Valor com cor conforme entrada (verde) ou saída (vermelho). */}
-                  <td
-                    className={
-                      row.value >= 0 ? "profit-positive" : "profit-negative"
-                    }
+      <h1 className="text-2xl font-bold mb-1">Extrato</h1>
+      <p className="text-sm text-muted mb-6">Suas movimentações</p>
+
+      {rows.length === 0 ? (
+        <p className="text-muted py-8 text-center">
+          Nenhuma movimentação registrada ainda.
+        </p>
+      ) : (
+        <div className="bg-surface border border-line rounded-2xl overflow-hidden">
+          {rows.map((row, index) => {
+            const info = typeInfo(row.type);
+            return (
+              <motion.div
+                key={row.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: index * 0.04 }}
+                className="flex items-center justify-between p-4 border-b border-line last:border-b-0"
+              >
+                <div className="flex items-center gap-3">
+                  {/* Ícone do tipo dentro de um círculo. */}
+                  <div className="w-9 h-9 rounded-full bg-surface2 flex items-center justify-center">
+                    {info.icon}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm">{info.label}</p>
+                    <p className="text-xs text-muted">{row.description}</p>
+                    <p className="text-[10px] text-muted/60 font-mono">
+                      {formatDate(row.date)}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0 ml-3">
+                  <p
+                    className={`font-mono font-bold ${row.value >= 0 ? "text-win" : "text-loss"}`}
                   >
-                    {row.value >= 0 ? "+" : ""}U$ {row.value.toFixed(2)}
-                  </td>
-                  <td>U$ {row.runningBalance.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+                    {row.value >= 0 ? "+" : "-"}
+                    {formatMoney(Math.abs(row.value))}
+                  </p>
+                  <p className="text-xs text-muted font-mono">
+                    Saldo: {formatMoney(row.runningBalance)}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

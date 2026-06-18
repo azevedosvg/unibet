@@ -21,7 +21,7 @@ export async function createEvent(data) {
   // Espalho os dados do formulário e forçamos os valores iniciais
   // todo evento nasce "aberto", sem resultado e com os pools zerados
   const response = await api.post("/events", {
-    ...eventData,
+    ...data,
     status: "open", // aberto para apostas assim que é criado
     result: "", // ainda sem resultado
     poolA: 0, // bolão do time A começa zerado

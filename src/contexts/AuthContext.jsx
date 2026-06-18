@@ -1,15 +1,32 @@
 // Usa a context API para que qualquer componente acesse o usuário logado, sem precisar receber essa informação via props
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { login as loginRequest } from "../services/userService";
 import { grantDailyBonusIfEligible } from "../services/bonusService";
 
 // 1: Criando o contexto (canal por onde os dados vão trafegar)
 const AuthContext = createContext();
 
+// Chave usada no localStorage para persistir a sessão entre recarregamentos.
+const STORAGE_KEY = "unibet:user";
+
 // 2: Provider (envolve o app e disponibiliza os dados, tudo que estiver dentro dele, consegue ler o usuário logado)
 export function AuthProvider({ children }) {
-  // Guarda o usuário autenticado, null = ninguém logado ainda
-  const [user, setUser] = useState(null);
+  // Guarda o usuário autenticado, null = ninguém logado ainda.
+  // Inicializa lendo o localStorage: se já havia uma sessão, ela sobrevive ao F5.
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // Sempre que o usuário mudar, espelha no localStorage (ou limpa, no logout).
+  // É isso que mantém a sessão viva ao recarregar a página.
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [user]);
 
   // Função de login: recebe email e senha, consulta a API via service, e se encontrar o usuário, guarda no estado global
   async function signIn(email, password) {
@@ -26,21 +43,17 @@ export function AuthProvider({ children }) {
 
     // Guarda o usuário (já com o bônus, se houve) no estado global.
     setUser(userWithBonus);
-    return userWithBonus;
-
-    // Login válido: guarda o usuário no estado global
-    setUser(foundUser);
-    return foundUser; // devolve para a tela de login decidir para onde redirecionar
+    return userWithBonus; // devolve para a tela de login decidir para onde redirecionar
   }
 
-  // Função de logout: apenas zera o usuário do estado
+  // Função de logout: apenas zera o usuário do estado (o useEffect limpa o localStorage)
   function signOut() {
     setUser(null);
   }
 
-  // 3: Disponibiliza o estado (user) e as ações (signIn, signOut) para todos os componentes filhos através do 'value'
+  // 3: Disponibiliza o estado (user), o setter (setUser, usado ao atualizar o saldo após uma aposta) e as ações (signIn, signOut) para todos os componentes filhos através do 'value'
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, setUser, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

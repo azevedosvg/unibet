@@ -21,6 +21,8 @@ function ProtectedRoute({ children, allowedRole }) {
   // 2 > Está logado, mas com o perfil errado para essa rota?
   // Ex: jogador tentando abrir /admin. Redireciona para o painel dele
   if (allowedRole && user.role !== allowedRole) {
+    // Descobre a área própria do perfil: admin vai pro painel admin, o resto pro dashboard do jogador
+    const ownArea = user.role === "admin" ? "/admin" : "/dashboard";
     // Manda cada perfil de volta para a sua própria área
     return <Navigate to={ownArea} replace />;
   }
